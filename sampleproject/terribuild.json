@@ -1,23 +1,20 @@
 {
     "packages": {
         "build_tools": {
-            "url": "https://toolchains.bootlin.com/downloads/releases/toolchains/x86-64/tarballs/x86-64--glibc--stable-2021.11-5.tar.bz2",
-            "sha256": "6fe812add925493ea0841365f1fb7ca17fd9224bab61a731063f7f12f3a621b0",
-            "root": "x86-64--glibc--stable-2021.11-5",
-            "compiler": "x86_64-linux-g++",
-            "linker": "x86_64-linux-g++"
+            "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-16.0.0/clang+llvm-16.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz",
+            "sha256": "2b8a69798e8dddeb57a186ecac217a35ea45607cb2b3cf30014431cff4340ad1",
+            "root": "clang+llvm-16.0.0-x86_64-linux-gnu-ubuntu-18.04",
+            "compiler": "clang++",
+            "linker": "clang++",
+            "debugger": "lldb"
         },
         "gtest": {
             "url": "https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz",
-            "root": "v1.14.0",
-            "ldflags": "-lgtest -lgtest_main",
-            "include": "include"
-        },
-        "debugger": {
-            "url": "https://toolchains.bootlin.com/downloads/releases/toolchains/x86-64/tarballs/x86-64--glibc--stable-2021.11-5.tar.bz2",
-            "sha256": "6fe812add925493ea0841365f1fb7ca17fd9224bab61a731063f7f12f3a621b0",
-            "root": "x86-64--glibc--stable-2021.11-5",
-            "debugger": "gdb"
+            "root": "googletest-1.14.0",
+            "compile_commands": "cmake . && make",
+            "libs": ["gtest", "gtest_main"],
+            "ldpaths": ["lib"],
+            "include": ["googletest/include", "googlemock/include"]
         }
     },
     "cflags": "-O2 -Wall -Werror -Wextra",
@@ -26,6 +23,8 @@
     "libraries": {
         "libhello_world": {
             "sources": ["src/libhello_world/src/hello_world.cpp"],
+            "libs": ["hello_world"],
+            "include": ["src/libhello_world/include"],
             "ldflags": [],
             "cflags": [],
             "dependencies": ["boost"]
@@ -40,8 +39,8 @@
         },
         "hello_world_test": {
             "sources": ["test/hello_world_test.cpp"],
-            "ldflags": ["-Lpackages/gtest/googletest-1.14.0/build/lib", "-lhello_world", "-L.", "-lgtest", "-lgtest_main"],
-            "cflags": ["-Ipackages/gtest/googletest-1.14.0/googletest/include", "-Isrc/libhello_world/include"],
+            "ldflags": [],
+            "cflags": [],
             "dependencies": ["libhello_world", "gtest"]
         }
     }

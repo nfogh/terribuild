@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+build
+sampleproject/packages
+hello_world
+hello_world_test

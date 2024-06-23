@@ -22,20 +22,23 @@ for packagename, packageinfo in configuration['packages'].items():
         if os.path.splitext(filename)[1] == ".gz":
             print("tar xzvf " + os.path.join("packages", filename) + " -C " + os.path.join("packages", packagename))
             os.system("tar xzvf " + os.path.join("packages", filename) + " -C " + os.path.join("packages", packagename))
+        if os.path.splitext(filename)[1] == ".xz":
+            print("tar xxvf " + os.path.join("packages", filename) + " -C " + os.path.join("packages", packagename))
+            os.system("tar xxvf " + os.path.join("packages", filename) + " -C " + os.path.join("packages", packagename))
         if os.path.splitext(filename)[1] == ".bz2":
             print("tar xjvf " + os.path.join("packages", filename) + " -C " + os.path.join("packages", packagename))
             os.system("tar xjvf " + os.path.join("packages", filename) + " -C " + os.path.join("packages", packagename))
+        
+        if packageinfo['compile_commands']:
+            print(packageinfo["compile_commands"])
+            os.system(packageinfo['compile_commands'])
 
 
 build_tools = configuration['packages']['build_tools']
 compiler = os.path.join("packages", "build_tools", build_tools['root'], "bin", build_tools['compiler'])
 linker = os.path.join("packages", "build_tools", build_tools['root'], "bin", build_tools['linker'])
 cflags = configuration['cflags']
-dynamiclinker = os.path.join(cwd, "packages", "build_tools", build_tools['root'], "x86_64-buildroot-linux-gnu", "sysroot", "lib", 'ld-linux-x86-64.so.2')
-rpath = os.path.join(cwd, "packages", "build_tools", build_tools['root'], "lib64")
-rpath2 = os.path.join(cwd, "packages", "build_tools", build_tools['root'], "x86_64-buildroot-linux-gnu", "sysroot", "lib")
-rpath3 = os.path.join(cwd, "packages", "build_tools", build_tools['root'], "x86_64-buildroot-linux-gnu", "lib64")
-ldflags = configuration['ldflags'] + f"-Wl,-dynamic-linker={dynamiclinker}" f"-Wl,-rpath={rpath} -Wl,-rpath={rpath2} -Wl,-rpath={rpath3} 
+ldflags = configuration['ldflags']
 
 if len(sys.argv) == 0:
     toBuild = list(configuration['libraries'].keys()) + list(configuration['programs'].keys())
@@ -70,6 +73,22 @@ for programname, programdata in configuration['programs'].items():
     extracflags = " ".join(programdata['cflags'])
     extraldflags = " ".join(programdata['ldflags'])
     dependencies = programdata['dependencies']
+
+    for dependency in dependencies:
+        if dependency in configuration['packages']:
+            for ldpath in configuration['packages'][dependency]['ldpaths']:
+                extraldflags = extraldflags + " -Lpackages/" + dependency + "/" + configuration['packages'][dependency]['root'] + "/" + ldpath
+            for lib in configuration['packages'][dependency]['libs']:
+                extraldflags = extraldflags + " -l" + lib
+            for path in configuration['packages'][dependency]['include']:
+                extracflags = extracflags + " -Ipackages/" + dependency + "/" + configuration['packages'][dependency]['root'] + "/" + path
+
+        if dependency in configuration['libraries']:
+            extraldflags = extraldflags + " -L."
+            for lib in configuration['libraries'][dependency]['libs']:
+                extraldflags = extraldflags + " -l" + lib
+            for path in configuration['libraries'][dependency]['include']:
+                extracflags = extracflags + " -I" + path
 
     print(f"Building {programname}")
     print(f"  Dependencies:")
