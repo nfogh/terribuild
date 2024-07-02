@@ -27,7 +27,8 @@
             "include": ["src/libhello_world/include"],
             "ldflags": [],
             "cflags": [],
-            "dependencies": ["boost"]
+            "dependencies": ["boost"],
+            "dest": "out/libhello_world"
         }
     },
     "programs": {
@@ -35,13 +36,15 @@
             "sources": ["src/main.cpp"],
             "ldflags": ["-L.", "-lhello_world"],
             "cflags": ["-Isrc/libhello_world/include"],
-            "dependencies": ["libhello_world"]
+            "dependencies": ["libhello_world"],
+            "dest": "out/hello_world"
         },
         "hello_world_test": {
             "sources": ["test/hello_world_test.cpp"],
             "ldflags": [],
             "cflags": [],
-            "dependencies": ["libhello_world", "gtest"]
+            "dependencies": ["libhello_world", "gtest"],
+            "dest": "out/test/hello_world"
         }
     }
 }

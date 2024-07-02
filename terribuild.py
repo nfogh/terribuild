@@ -58,13 +58,19 @@ for libraryname, librarydata in configuration['libraries'].items():
     print(f"    {librarydata['dependencies']}")
     print(f"  Sources:")
     print(f"    {sources}")
+    os.makedirs(librarydata['dest'], exist_ok=True)
     objects = []
     for source in sources:
-        command = f"{compiler} {cflags} {extracflags} -fpic -c {source} -o {source}.o"
+        objectFileDir = f"{librarydata['dest']}/{os.path.dirname(source)}"
+        os.makedirs(objectFileDir, exist_ok=True)
+        objectFilePath = f"{librarydata['dest']}/{source}.o"
+        command = f"{compiler} {cflags} {extracflags} -fpic -c {source} -o {objectFilePath}"
+        os.makedirs(librarydata['dest'], exist_ok=True)
         print(command)
         os.system(command)
-        objects.append(source + ".o")
-    command = f"{linker} -shared -o {libraryname}.so {ldflags} {extraldflags} {' '.join(objects)}"
+        objects.append(objectFilePath)
+    
+    command = f"{linker} -shared -o {librarydata['dest']}/{libraryname}.so {ldflags} {extraldflags} {' '.join(objects)}"
     print(command)
     os.system(command)
 
@@ -84,7 +90,7 @@ for programname, programdata in configuration['programs'].items():
                 extracflags = extracflags + " -Ipackages/" + dependency + "/" + configuration['packages'][dependency]['root'] + "/" + path
 
         if dependency in configuration['libraries']:
-            extraldflags = extraldflags + " -L."
+            extraldflags = extraldflags + " -L" + configuration['libraries'][dependency]['dest']
             for lib in configuration['libraries'][dependency]['libs']:
                 extraldflags = extraldflags + " -l" + lib
             for path in configuration['libraries'][dependency]['include']:
@@ -96,12 +102,15 @@ for programname, programdata in configuration['programs'].items():
     print(f"  Sources:")
     print(f"    {sources}")
     objects = []
+    os.makedirs(programdata['dest'], exist_ok=True)
     for source in sources:
-        command = f"{compiler} {cflags} {extracflags} -c {source} -o {source}.o"
+        objectFileDir = f"{programdata['dest']}/{os.path.dirname(source)}"
+        os.makedirs(objectFileDir, exist_ok=True)
+        command = f"{compiler} {cflags} {extracflags} -c {source} -o {programdata['dest']}/{source}.o"
         print(command)
         os.system(command)
-        objects.append(source + ".o")
+        objects.append(f"{programdata['dest']}/{source}.o")
 
-    command = f"{linker} -o {programname} {' '.join(objects)} {ldflags} {extraldflags}"
+    command = f"{linker} -o {programdata['dest']}/{programname} {' '.join(objects)} {ldflags} {extraldflags}"
     print(command)
     os.system(command)
