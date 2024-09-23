@@ -5,12 +5,7 @@ import sys
 
 cwd = os.getcwd()
 
-with open('terribuild.json') as f:
-    configurationText = f.read()
-    configuration = json.loads(configurationText)
-
-# First, get all dependencies
-for packagename, packageinfo in configuration['packages'].items():
+def installPackage(packagename, packageinfo):
     if not os.path.isdir(os.path.join("packages", packagename)):
         if "url" in packageinfo:
             url = packageinfo["url"]
@@ -43,8 +38,20 @@ for packagename, packageinfo in configuration['packages'].items():
             print(packageinfo["compile_commands"])
             os.system(packageinfo['compile_commands'])
 
+with open('terribuild.json') as f:
+    configurationText = f.read()
+    configuration = json.loads(configurationText)
 
-build_tools = configuration['packages']['build_tools']
+if not 'build_tools' in configuration:
+    exit("No build tools specified in configuration")
+
+installPackage('build_tools', configuration['build_tools'])
+
+# First, get all dependencies
+for packagename, packageinfo in configuration['packages'].items():
+    installPackage(packagename, packageinfo)
+
+build_tools = configuration['build_tools']
 compiler = os.path.join(cwd, "packages", "build_tools", build_tools['root'], build_tools['compiler'])
 linker = os.path.join(cwd, "packages", "build_tools", build_tools['root'], build_tools['linker'])
 cflags = configuration['cflags']

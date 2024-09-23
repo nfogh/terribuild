@@ -11,10 +11,12 @@
             "program": "${workspaceFolder}/${command:terribuild.selectedBinaryPath}",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${command:terribuild.selectedBinaryDir}",
-            "environment": [],
+            "cwd": "${workspaceFolder}/${command:terribuild.selectedBinaryDir}",
+            "environment": [
+                {"name": "LD_LIBRARY_PATH", "value": "${command:terribuild.selectedBinarySOLibPaths}"}
+            ],
             "externalConsole": false,
-            "additionalSOLibSearchPath": "${terribuild.selectedBinarySOLibPaths}",
+            "additionalSOLibSearchPath": "${command:terribuild.selectedBinarySOLibPaths}",
             "MIMode": "gdb",
             "setupCommands": [
                 {

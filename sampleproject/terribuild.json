@@ -25,8 +25,8 @@
             ]
         }
     },
-    "cflags": "-O2 -Wall -Werror -Wextra",
-    "ldflags": "",
+    "cflags": "-O0 -Wall -Werror -Wextra -ggdb3",
+    "ldflags": "-ggdb3",
     "binaries": {
         "libhello_world": {
             "type": "library",
@@ -34,6 +34,10 @@
                 "src/libhello_world/src/hello_world.cpp"
             ],
             "name": "hello_world",
+            "cflags": [
+                "-O0",
+                "-ggdb3"
+            ],
             "include": [
                 "src/libhello_world/include"
             ],
@@ -43,6 +47,10 @@
             "type": "executable",
             "sources": [
                 "src/main.cpp"
+            ],
+            "cflags": [
+                "-O0",
+                "-ggdb3"
             ],
             "dependencies": [
                 "libhello_world"
