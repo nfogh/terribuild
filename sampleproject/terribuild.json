@@ -1,13 +1,13 @@
 {
+    "build_tools": {
+        "git": "https://github.com/llvm/llvm-project.git",
+        "compile_commands": "mkdir build && cd build && cmake -DLLVM_ENABLE_PROJECTS=clang -DCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\" ../llvm && make -j4",
+        "root": "llvm-project/build/bin",
+        "compiler": "clang++",
+        "linker": "clang++",
+        "debugger": "lldb"
+    },
     "packages": {
-        "build_tools": {
-            "git": "https://github.com/llvm/llvm-project.git",
-            "compile_commands": "mkdir build && cd build && cmake -DLLVM_ENABLE_PROJECTS=clang -DCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\" ../llvm && make -j4",
-            "root": "llvm-project/build/bin",
-            "compiler": "clang++",
-            "linker": "clang++",
-            "debugger": "lldb"
-        },
         "gtest": {
             "url": "https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz",
             "root": "googletest-1.14.0",
@@ -41,22 +41,22 @@
         },
         "hello_world": {
             "type": "executable",
-            "dependencies": [
-                "libhello_world"
-            ],
             "sources": [
                 "src/main.cpp"
+            ],
+            "dependencies": [
+                "libhello_world"
             ],
             "dest": "out/hello_world"
         },
         "hello_world_test": {
             "type": "executable",
+            "sources": [
+                "test/hello_world_test.cpp"
+            ],
             "dependencies": [
                 "libhello_world",
                 "gtest"
-            ],
-            "sources": [
-                "test/hello_world_test.cpp"
             ],
             "dest": "out/test/hello_world"
         }
